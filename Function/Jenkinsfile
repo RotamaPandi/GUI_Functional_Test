@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    stages {
+        stage ('Checkout Repo') {
+            //please setup git repo and credential on pipeline config
+            //checkout scm
+            steps {
+                catchError {
+                    checkout scm
+                    sh "pwd"
+                }
+            }
+        }
+        stage ('Test Execution') {
+            //please setup git repo and credential on pipeline config
+            //checkout scm
+            steps {
+                catchError{
+                    sh "robot ${WORKSPACE}/DAP_FunctionalTest/Inbound"
+                }              
+            }
+        }
+    }
+    
+    post { 
+        always { 
+            robot archiveDirName: 'robot-plugin', onlyCritical: false, outputPath: '', overwriteXAxisLabel: '', passThreshold: 100.0, unstableThreshold: 80.0
+        }
+    }
+}
